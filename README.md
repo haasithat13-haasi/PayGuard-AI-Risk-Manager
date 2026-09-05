@@ -5,10 +5,11 @@ An AI-powered transaction risk assessment prototype designed to identify potenti
 
 ## 🚀 Live Demo
 
-Try the PayGuard AI Transaction Risk Manager:
+Try the interactive PayGuard AI Transaction Risk Manager:
 
 [Launch PayGuard Demo](https://a54fe9be2656f34030.gradio.live)
 
+> Note: The demo is hosted temporarily using a Gradio share link and may not always be available.
 ## 🎯 Problem
 
 Payment fraud can involve multiple behavioral signals such as unusually large transactions, repeated failed payment attempts, rapid transaction activity, device changes, international transactions, and unusual transaction timing.
