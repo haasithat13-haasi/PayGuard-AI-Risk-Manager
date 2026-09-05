@@ -83,7 +83,7 @@ The project includes an interactive Gradio interface where users can enter trans
 
 - `PayGuard_AI_Risk_Manager.ipynb` — Main development notebook
 - `transactions.csv` — Simulated transaction dataset
-- `payguard_model.pkl` — Trained model artifact
+
 
 ## 🚀 Future Improvements
 
