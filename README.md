@@ -9,8 +9,7 @@ Try the live PayGuard application here:
 
 👉 https://payguard-ai-risk-manager.onrender.com
 
-> Note: The demo is hosted temporarily using a Gradio share link and may not always be available.
-## 🎯 Problem
+🎯 Problem
 
 Payment fraud can involve multiple behavioral signals such as unusually large transactions, repeated failed payment attempts, rapid transaction activity, device changes, international transactions, and unusual transaction timing.
 
