@@ -1,11 +1,34 @@
 import os
 import gradio as gr
 import pandas as pd
-import numpy as np
-import joblib
+from sklearn.ensemble import RandomForestClassifier
 
-# Load trained model
-model = joblib.load("payguard_model.pkl")
+# Load the transaction dataset
+df = pd.read_csv("transactions.csv")
+
+# Features used by the model
+features = [
+    "amount",
+    "account_age_days",
+    "transactions_last_24h",
+    "device_changes_30d",
+    "failed_attempts",
+    "international",
+    "new_device",
+    "transaction_hour"
+]
+
+# Prepare training data
+X = df[features]
+y = df["is_fraud"]
+
+# Train the Random Forest model
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+model.fit(X, y)
 
 
 def assess_transaction(
@@ -18,7 +41,7 @@ def assess_transaction(
     new_device,
     transaction_hour
 ):
-    # Create input in the exact same order used during training
+    # Create input data in the same feature order
     data = pd.DataFrame([{
         "amount": amount,
         "account_age_days": account_age_days,
@@ -33,7 +56,7 @@ def assess_transaction(
     # Get fraud probability
     probability = model.predict_proba(data)[0][1]
 
-    # Convert to risk score
+    # Convert probability to risk score
     risk_score = round(probability * 100)
 
     # Determine risk level
@@ -47,37 +70,46 @@ def assess_transaction(
         level = "🟢 LOW RISK"
         recommendation = "Transaction appears relatively safe to approve."
 
-    # Generate human-readable explanations
+    # Generate explanations
     reasons = []
 
     if amount > 50000:
         reasons.append("Unusually high transaction amount")
+
     if transactions_last_24h > 8:
         reasons.append("High transaction frequency in the last 24 hours")
+
     if device_changes_30d > 3:
         reasons.append("Multiple device changes recently")
+
     if failed_attempts > 2:
         reasons.append("Multiple failed payment attempts")
+
     if international == 1:
         reasons.append("International transaction")
+
     if new_device == 1:
         reasons.append("Transaction from a new device")
+
     if transaction_hour < 5 or transaction_hour > 23:
         reasons.append("Transaction occurred during unusual hours")
+
     if account_age_days < 30:
         reasons.append("Recently created account")
 
     if not reasons:
         reasons.append("No major behavioral risk signals detected")
 
-    reason_text = "\n".join([f"• {r}" for r in reasons])
+    reason_text = "\n".join(
+        [f"• {reason}" for reason in reasons]
+    )
 
     result = f"""
 # {level}
 
 ### Risk Score: {risk_score}/100
 
-**AI Assessment**
+## AI Assessment
 
 {recommendation}
 
@@ -86,13 +118,14 @@ def assess_transaction(
 {reason_text}
 
 ### Model Probability
+
 Estimated probability of fraud: **{probability:.1%}**
 """
 
     return result
 
 
-# Interface
+# Create the Gradio interface
 with gr.Blocks(title="PayGuard AI Risk Manager") as demo:
 
     gr.Markdown("""
@@ -106,7 +139,9 @@ potentially fraudulent behavior before approval.
     gr.Markdown("### Enter Transaction Details")
 
     with gr.Row():
+
         with gr.Column():
+
             amount = gr.Number(
                 label="Transaction Amount (₹)",
                 value=5000,
@@ -136,6 +171,7 @@ potentially fraudulent behavior before approval.
             )
 
         with gr.Column():
+
             failed_attempts = gr.Number(
                 label="Failed Payment Attempts",
                 value=0,
@@ -144,13 +180,13 @@ potentially fraudulent behavior before approval.
             )
 
             international = gr.Radio(
-                [0, 1],
+                choices=[0, 1],
                 label="International Transaction?",
                 value=0
             )
 
             new_device = gr.Radio(
-                [0, 1],
+                choices=[0, 1],
                 label="New Device?",
                 value=0
             )
@@ -196,7 +232,11 @@ payment-risk data for this prototype.
 """)
 
 
-# Render deployment: bind to the host/port supplied by the platform.
+# Run the app on Render
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))
-    demo.launch(server_name="0.0.0.0", server_port=port)
+
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=port
+    )
