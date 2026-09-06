@@ -5,9 +5,9 @@ An AI-powered transaction risk assessment prototype designed to identify potenti
 
 ## 🚀 Live Demo
 
-Try the interactive PayGuard AI Transaction Risk Manager:
+Try the live PayGuard application here:
 
-[Launch PayGuard Demo](https://a54fe9be2656f34030.gradio.live)
+👉 https://payguard-ai-risk-manager.onrender.com
 
 > Note: The demo is hosted temporarily using a Gradio share link and may not always be available.
 ## 🎯 Problem
